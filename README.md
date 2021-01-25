@@ -1,24 +1,67 @@
-```
+# Conceptual Graphs for Javascript
 
-                                    __                            __  
-  _________  ____  ________  ____  / /_   ____ __________ _____  / /_ 
- / ___/ __ \/ __ \/ ___/ _ \/ __ \/ __/  / __ `/ ___/ __ `/ __ \/ __ \
-/ /__/ /_/ / / / / /__/  __/ /_/ / /_   / /_/ / /  / /_/ / /_/ / / / /
-\___/\____/_/ /_/\___/\___/ .___/\__/   \__, /_/   \__,_/ .___/_/ /_/ 
-                         /_/           /____/          /_/  
-----------------------------------------------------------------------   
-```
+Conceptual Graphs inspired by John F Sowa. Runs on Gun. 
+
+This library has been deprecated in favour of a P2P-Enabled Prolog-centric CG & Reasoner system (see https://github.com/jacobfriedman/p2p-prolog). We found the await() system tough to manage with respect to axiom-enforcement in an alternate system.
 
 
-[![Join the chat at https://gitter.im/conceptGraph/Lobby](https://badges.gitter.im/conceptGraph/Lobby.svg)](https://gitter.im/conceptGraph/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+I would like to personally thank Jachen Duschletta for all of his hard work and the strength he had to carry on through my philosophical considerations. 
 
-Conceptual Graphs inspired by John F Sowa.
+---
+
+## What it does
 
 Create Concept Graphs and Schemas, that can call functions and access databases
 to create answer graphs.
 
-Best enjoyed with some white papers along side.
+## API
 
+While this wasn't completely formalized, it goes along the lines of 
+
+```
+    /*
+    * Procure a Context. This may be used to design a Lambda Expression.
+    * Context is the agent of having an object which is a thing. A context is 'a concept that contains a nonblank CG that is used to describe the referent of the concept; the entity that a concept refers to.'
+    * @param {string} identifier - idenfity the context
+    * @param {array} concepts  - concepts in the context
+    * @param {array} relations - relations in the context
+    * @param {array} arcMaps - arcs in the context.
+            Arc: An ordered pair <r,c> which is said to link a conceptual relation r to a concept c.
+            Arc-maps follow the form [ [[in], [out]], [...] ]
+            where Map elements = key-value pairs (arrays with two elements, e.g. [[ 1, 'one' ],[ 2, 'two' ]]).
+            e.g.    ◻1 - ◯1 - ◻2  is defined by [ [ [◻1], [◯1] ], [ [◯1],[◻2] ] ].
+    * @returns {string} identifier of the context
+    */
+```
+
+## To-Dos
+       
+
+Realtime Conceptual Graph Chat System
+JF: Terms & Contexts
+JD: good idea, keep chat separate
+Next Steps
+The construction of a document should be in javascript first
+
+- Create UUID for type for type hierarchy
+- generate rules based on type hierarchy
+- window context & language
+- Create a Language: Javascript
+- Prove equivalence between provability in given modal logics and a subset of the provable facts in the corresponding ML systems
+- Create a Proposition: A Document
+- Create a Situation: A Document
+- Make translation axiom
+- HTML Lexicon in Javascript e.g. exists? typeOf === HTMLElement
+- translate concept element to html
+- try to get tab working in this textarea
+- Making an HTML Component
+- Making an HTML Component an Axiom
+- Guaranteeing HTML Component's slot relates to childOf?
+- Creating New Person
+- Creating New Thing that is a Document
+- version-control this document
+
+---
 
 Theory straight from John F. Sowa's Paper titled
 Conceptual Graphs for a Data Base Interface July 1976
@@ -106,33 +149,6 @@ The join function:
 >find concept person in graph2
 >find concept2 of join in graph1 and graph2 and merge them together
 
-
-## To-Dos
-       
-
-CHAT
-JF: Terms & Contexts
-JD: good idea, keep chat separate
-Next Steps
-The construction of a document should be in javascript first
-
-- Create UUID for type for type hierarchy
-- generate rules based on type hierarchy
-- window context & language
-- Create a Language: Javascript
-- Prove equivalence between provability in given modal logics and a subset of the provable facts in the corresponding ML systems
-- Create a Proposition: A Document
-- Create a Situation: A Document
-- Make translation axiom
-- HTML Lexicon in Javascript e.g. exists? typeOf === HTMLElement
-- translate concept element to html
-- try to get tab working in this textarea
-- Making an HTML Component
-- Making an HTML Component an Axiom
-- Guaranteeing HTML Component's slot relates to childOf?
-- Creating New Person
-- Creating New Thing that is a Document
-- version-control this document
 
 
 ## Contexts
@@ -236,21 +252,21 @@ Sowa describes:
 #### 1. Indentify the Task
 Determine what knowledge must be represented in order to connect problem instances to answers i.e. the PEAS Process:
 
-	- Performance Measure (be safe, maximize profits, obey laws)
-	- Environment (urban streets, weather, customers)
-	- Actuators: Used to measure the continuous and discrete process variables. 
-	- Sensors: Used to measure the continuous and discrete process variables.
+  - Performance Measure (be safe, maximize profits, obey laws)
+  - Environment (urban streets, weather, customers)
+  - Actuators: Used to measure the continuous and discrete process variables. 
+  - Sensors: Used to measure the continuous and discrete process variables.
 
 In our case, PEAS can be:
-	- Performance Measure: Document represents the information 
-	- Environment: Computer, Network, Person
-	- Actuators: DOM / 
-	- Sensors: Listeners
+  - Performance Measure: Document represents the information 
+  - Environment: Computer, Network, Person
+  - Actuators: DOM / 
+  - Sensors: Listeners
 
 2. Assemble the Relevant Knowledge
 
 ```
-// 		especially in a particular kind of language or branch of study.
+//    especially in a particular kind of language or branch of study.
 var AxiomTerm = new Thing ('Term Axiom', 'axiom', uuidv4());
 
 ∀x∃y RFP(x) - Create(y, x) ∧ Company(y) ∨ → ↔ ¬ 
@@ -285,17 +301,17 @@ function Thing (label, type, uuid, arcs, value) {
 thing => storage => Object.assign(new Thing(), data) 
   
   // Term Axiom
-// 		Term: a word or phrase used to describe a thing or to express a concept, 
-// 		especially in a particular kind of language or branch of study.
+//    Term: a word or phrase used to describe a thing or to express a concept, 
+//    especially in a particular kind of language or branch of study.
 // Language = HTML
   
 var AxiomTerm = new Thing ('Term Axiom', 'axiom', uuidv4());
 
   Term → ... Translate(Concept)
   
-  HTML 			 		Javascript
+  HTML          Javascript
   
-  Javascript 		Javascript
+  Javascript    Javascript
   
   Term → ... Translate(Concept)
   
