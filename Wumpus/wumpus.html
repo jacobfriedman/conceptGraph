@@ -24,7 +24,11 @@
   <script src="../lib/parse.js" charset="utf-8"></script>
   <script src="../lib/infer.js" charset="utf-8"></script>
   <script src="wumpusWorld.js" charset="utf-8"></script>
+  <script src="https://unpkg.com/compromise@latest/builds/compromise.min.js"></script>
   <script type="text/javascript">
+
+    /*var t = window.nlp('Computer, create a new document "Test". "Test" has text "Hello World". Some students will be working late in their rooms.')
+    textToGraph(t);*/
 
     /* Creating a wumpus world with an adventurer steered using
     * Conceptual Graphs KB system
@@ -132,6 +136,7 @@
     temp.init();
     temp.render(can);
 
+/*
     // d3 init code
 
     function dragstarted(d) {
@@ -214,6 +219,6 @@
         .attr("y", function(d) { return d.y + 3; })
     }
   };
-
+*/
   </script>
 </html>

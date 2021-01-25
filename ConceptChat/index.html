@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" identifier="root" label="this">
+<head>
+  <meta charset="utf-8">
+  <title>Concept Chat</title>
+  <link rel="stylesheet" href="client.css" >
+</head>
+
+<body id="body">
+
+  <div id="loading">
+    Loading Lobby....
+  </div>
+
+</body>
+
+
+
+<script type="module">
+  // import bootloader
+  // get reasoner into website for adding event listeners
+  import * as boot from './superpeer/lib/boot.mjs';
+
+  // init gun connection and setup user module
+  // var peers = ['https://E2EEC.herokuapp.com/gun']
+  // window.gun = window.Gun(/* {peers:peers} */);
+  // var app = gun.get('conceptChat');
+
+  (async () => {
+
+      // 3. Initialize the Boot Event
+      //    - Flows the window down to the other modules
+      //    - Inference, rules, nearley, etc - everything needed to run parser.
+      //    - Also sets up functions to hook into event system
+
+      await boot.initialize(window);
+
+      /*
+      // this will not succeed at the moment and mess with my stuff
+      user.auth('Admin', 'Admin', (userObj) => {
+        console.log(userObj)
+      })
+      */
+
+  })()
+
+
+
+</script>
+
+</html>

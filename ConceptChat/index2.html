@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" identifier="root" label="this">
+<head>
+</head>
+    <body id="body"><div id="loading"></div><p><span id="test"></span></p></body>
+<script>
+
+  /*
+function walk(node, callback) {
+    const treeWalker = document.createTreeWalker(
+      node,
+      NodeFilter.SHOW_ALL
+    );
+    
+    while(treeWalker.nextNode()) {
+        const el = treeWalker.currentNode;
+
+        //el.setAttribute('identifier',Date.now())
+        // 1 = ELEMENT_NODE
+        // 8 = COMMENT_NODE
+        // 10 = DOCUMENT_TYPE_NODE
+        // 11 = DOCUMENT_FRAGMENT_NODE
+        if( (el.nodeType === 1) || (el.nodeType === 11)) {
+
+          console.log(el,'ELEMENT')
+
+          el.setAttribute('identifier',Date.now())
+        }
+
+        
+        callback.call(el);
+    }
+}
+
+let i = 0;
+
+let test = document.implementation.createHTMLDocument();
+
+walk(test, function(el) {
+    i++;
+});
+
+console.log(test)
+
+
+
+    let walker = document.createTreeWalker(
+        document.body,  // root node
+        NodeFilter.SHOW_TEXT,  // filtering only text nodes
+        null,
+        false
+    );
+    
+    while (walker.nextNode()) {
+        if (walker.currentNode.nodeValue.trim())  // if it's not empty(whitespaced) node
+          walker.currentNode.nodeValue = newText;
+    }
+
+    */
+
+
+(async () => {
+
+
+console.log('async initted')
+
+    let walker = document.createTreeWalker(
+        document.body,  // root node
+        NodeFilter.SHOW_ALL,  // filtering only text nodes
+        null,
+        false
+    );
+
+    async function* walkNode () {
+
+      yield* walker.nextNode()
+
+    }
+
+
+  for await (const val of walkNode) {
+   // console.log(val); // Prints "Hello"
+  }
+
+  console.log(walker.nextNode())
+
+
+})()
+
+
+</script>
+
+</html>

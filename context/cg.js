@@ -1,4 +1,259 @@
-/* Inference relies on all other files at this point, so make sure they are included in the right order */
+// Initiate Identifiers
+var __identifiers = {};
+// Initiate Contexts
+var __contexts = new Set();
+
+const flatten = list => list.reduce(
+    (a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []
+);
+
+async function encode(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder("utf-8").encode(str));
+  return Array.prototype.map.call(new Uint8Array(buf), x=>(('00'+x.toString(16)).slice(-2))).join('');
+}
+
+
+const database = new Gun();
+
+
+(async function assertUniverse() {
+
+	const terms = [
+
+		// Primaries
+    	'have', 'identifier', 'thing',
+	   	'concept', 'relation', 'axiom', 'arc',
+	   	'type', 'subtype', 'supertype',
+	   	'agent', 'property',
+
+	   	// Secondaries
+	   	'context', 'term',
+
+	   	// Tertiaries
+	   	'language', 'english', 'javascript',
+	   	'be',
+	   	'before', 'after',
+
+	   	// Auxiliaries
+	   	'window', 'document', 'database', 'person',
+	   	'function', 'async', 'parameter'
+	  ]
+
+		/*
+		* Store a Literal
+		* @param {string} value - the 'value' of the literal
+		* @param {string} type - The designator type. This can be :
+									+ literalNumber, literalString, literalEncoded
+									+ locatorIndividualMarker, locatorIndexical, locatorName
+									+ undetermined
+		*/
+		async function procureReferent(value, type, genesis = false) {
+
+			// The designated representative of the literal.
+			// This can be :
+			var designator = '';
+			var record = null,
+				recordIdentifier = null;
+
+			// TODO: Add all types of literals / designator-types according to Sowa
+			if (type === 'literalEncoded') {
+				designator = await encode(value);
+			}
+
+			// add __genesis if this is the first insertion of the identifier (bootstrapped)
+			var literal = genesis ? {__genesis: true} : {};
+			literal[designator] = value;
+
+			// Seek out the record of the designator
+			const recordDesignator = await database.get(designator).then();
+
+			// If we don't have a record of the designator & we're bootstrapping...
+			if(genesis && recordDesignator !== undefined) {
+				var recordsGenesis = null;
+
+				// This needs to be more efficient (rather than iterating over all 'term'-things
+				await database.get(designator).then(
+					refs => Promise.all(Object.keys(refs).map(k => database.get(k).then()))
+				)
+				.then(r => {recordsGenesis = r});
+
+				// If we have genesis records...
+				if(recordsGenesis.length > 0) {
+					for(var i = 0; i < recordsGenesis.length; i++) {
+						var recordGenesis = recordsGenesis[i];
+						if(recordGenesis !== undefined) {
+							if('__genesis' in recordGenesis) {
+								if(recordGenesis['__genesis'] === true) {
+									record = await database.get(recordGenesis['_']['#']).then()
+									recordIdentifier = await Gun.node.soul(record);
+								}
+							}
+						}
+					}
+				}
+
+			} else {
+				record = await database.get(designator).set(literal).then();
+				recordIdentifier = await Gun.node.soul(record);
+			}
+
+			const designatorIdentifier = await Gun.node.soul(recordDesignator);
+
+			return {record, recordIdentifier, recordDesignator, designatorIdentifier};
+
+		}
+
+		/*
+		* Procure a Term.
+			- Given a term,
+			- Store a referent
+		* @param {string} term - the 'term' to procure
+		* @param {boolean} exist - whether the term exists or not
+		*/
+		async function procureTerm(term, genesis = false) {
+
+			console.log('Procure Term: "'+term+ '"...')
+
+			const referent = await procureReferent(term, 'literalEncoded', genesis)
+
+			      __identifiers[term] = referent.recordIdentifier; // is this the identifier of the thing or of the referent to the thing?
+
+			return referent
+		}
+
+		// Introduce 'context' as the universe, before there is anything contextually related.
+		// It is a prerequisite that anything in the universe means the universe is the context.
+
+		/*
+		* Procure a Context. This may be used to design a Lambda Expression.
+		* Context is the agent of having an object which is a thing. A context is 'a concept that contains a nonblank CG that is used to describe the referent of the concept; the entity that a concept refers to.'
+		* @param {string} identifier - idenfity the context
+		* @param {array} concepts  - concepts in the context
+		* @param {array} relations - relations in the context
+		* @param {array} arcMaps - arcs in the context.
+						Arc: An ordered pair <r,c> which is said to link a conceptual relation r to a concept c.
+						Arc-maps follow the form [ [[in], [out]], [...] ]
+						where Map elements = key-value pairs (arrays with two elements, e.g. [[ 1, 'one' ],[ 2, 'two' ]]).
+						e.g.    ◻1 - ◯1 - ◻2  is defined by [ [ [◻1], [◯1] ], [ [◯1],[◻2] ] ].
+		* @returns {string} identifier of the context
+		*/
+		async function procureContext(contextIdentifier = null, concepts = [], relations = [], arcs = []) {
+
+			// A blank conceptual graph returns the identifier of our inception-context
+
+			console.log('Concepts:', concepts.length, 'Relations:', relations.length, 'Arcs:', arcs.length)
+
+			if(concepts.length === 0 && relations.length === 0 && arcs.length === 0) {
+				return __identifiers['context']
+			}
+
+
+			let uniqueConcepts = [...new Set(concepts)].sort();
+			let uniqueRelations = [...new Set(relations)].sort();
+
+			// iterate over all arc sets and push them into a complete list
+			for (var i = 0; i < arcs.length; i++) {
+
+				var arcMap = arcs[i];
+
+				for (var j = 0; j < arcMap.length; j++) {
+
+					var arc = arcMap[j];
+
+					console.log(arc, 'thearc')
+
+				}
+
+			}
+
+			var uniqueArcs = [...new Set(flatten(arcs).sort())].sort();
+
+			var referentLiteral = concepts.join('') + relations.join('') + uniqueArcs.join('');
+
+			//console.log(uniqueConcepts, uniqueRelations, uniqueArcs)
+			// console.log(referentLiteral)
+
+			console.log('Procure Context: "'+contextIdentifier+ '"...')
+			const referent = await procureReferent(referentLiteral, 'literalEncoded')
+			const identifier = referent.recordIdentifier;
+			console.log('Procured Context: ' +identifier + ' with Designator Identifier:' +referent.designatorIdentifier)
+
+			return identifier
+
+		}
+
+
+		async function assignType(typeIdentifier, thingIdentifier) {
+
+		}
+
+		async function assignProperty(thingIdentifier, targetIdentifier) {
+
+			// e.g. [Person: Jacob x] (agent?x?y) [Have:**y] (object?y?z) [CommunicationDevice: Phone z]
+			// [thing x] (agent?x?y) [have ** y] (property?y?z) [thing z ]
+
+			// 1. look for a context where this property is already assigned
+			// 		a) sort, alphabetically, identifiers & ask for the context...
+
+			// 2. procureContext(null)
+
+			var have = __identifiers['have'];
+			var agent = __identifiers['agent'];
+			var property = __identifiers['property'];
+
+
+			// I store a ref to the context under A
+			// or ref the context with a,b,c,d, etc.
+
+			var things = [thingIdentifier, targetIdentifier, have, agent, property]
+
+			await database.get(have).then()
+
+			// initiate context
+			// assert
+		}
+
+		//async function procureContext()
+		async function initiate(terms) {
+
+			/*
+
+				1. Procure all genesis terms & store their IDs under __identifiers.
+				2. Genesis terms are indicated with a __genesis.
+
+			*/
+			const genesis = true;
+			for await (const term of terms) {
+
+					var thing = await procureTerm(term, genesis);
+			}
+		}
+
+
+		await initiate(terms);
+
+		var contextEmpty = await procureContext()
+
+		const agent			= __identifiers['agent']
+		const have 			= __identifiers['have']
+		const property 		= __identifiers['property']
+		const identifier 		= __identifiers['identifier']
+
+
+		// [Context: contextNothing] - ( agent ) - [ Verb: Have ] - ( property ) - [ Identifier: 'xdf33s...' ]
+
+		var contextIdentifiedArcs = [
+			[ [contextEmpty] , [agent] ], // contextEmpty -> agent
+			[ [agent] , [have] ],		  // agent -> have
+			[ [have] , [property]],		  // have -> property
+			[ [property], [identifier]]   // property -> identifier
+		]
+
+		var contextIdentified = await procureContext(null, [contextEmpty, have], [agent, property], contextIdentifiedArcs )
+		console.log(__identifiers, 'context is', contextIdentified)
+  
+})();
+
 
 /*
 * Function that instantiates a reasoner to use
@@ -43,7 +298,7 @@ function Reasoner (eventSystem) {
     // initialize pre-conditions
     found = false;
     law = false;
-    console.log(`starting tell with found ${found} and law ${law}`);
+
     // search through current knowledge to find projections
     // make sure empty var is initialized
     var result = [];
@@ -57,12 +312,12 @@ function Reasoner (eventSystem) {
       console.log(result);
       found = true;
     }
-    console.log(`checking current with found ${found} and law ${law}`);
+
     // search through laws to find projection (needs to fully cover law)
     // make sure empty var is initialized
     var result = [];
     for(var index in this.law.axioms){
-      var proj = infUtil.project(graph, this.law.axioms[index], true); // TODO: LAWS don't merge, they are never found...
+      var proj = infUtil.project(graph, this.law.axioms[index], true);
       if(proj.length>0){
         console.log(proj);
         result.push(index);
@@ -72,7 +327,7 @@ function Reasoner (eventSystem) {
       law = true;
       console.log(result);
     }
-    console.log(`checking laws with found ${found} and law ${law}`);
+
     // do what needs to be done per logic attached
     if(found && !law) {
       this.current.add(graph);
@@ -92,7 +347,6 @@ function Reasoner (eventSystem) {
     } else {
       // search through schema to find projection
       // make sure empty var is initialized
-      console.log(`both false? with found ${found} and law ${law}`);
       var result = [];
       for(var index in this.schema.axioms){
         var proj = infUtil.projection(graph, this.schema.axioms[index], false);
@@ -267,8 +521,6 @@ var infUtil = (function() {
         // (1)
         if(this.root1.referent == '*' && this.root2.referent != '*') {
           // The source is a specialisation of the target
-          console.log(`Merging ${this.root1.label} :: ${this.root1.referent} :: ${this.root1.uuid}`);
-          console.log(`with ${this.root2.label} :: ${this.root2.referent} :: ${this.root2.uuid}`);
           results.push({from:this.root2.uuid,to:this.root1.uuid, what:'referent', depth:this.depth})
           this.tree.add(this.root2.uuid)
           this.tree.add(this.root1.uuid)
@@ -283,8 +535,6 @@ var infUtil = (function() {
           newItems = arrT.filter((item)=>{arrS.indexOf(item) < 0})
           if(newItems.length>0){
             results.push({from:this.root2.uuid,to:this.root1.uuid,what:'referent', depth:this.depth});
-            console.log(`Merging ${this.root1.label} :: ${this.root1.referent} :: ${this.root1.uuid}`);
-            console.log(`with ${this.root2.label} :: ${this.root2.referent} :: ${this.root2.uuid}`);
             this.tree.add(this.root2.uuid);
             this.tree.add(this.root1.uuid);
           }
@@ -299,8 +549,6 @@ var infUtil = (function() {
           newItems = arrT.filter((item)=>{return arrS.indexOf(item) < 0})
           if(newItems.length>0){
             results.push({from:this.root2.uuid,to:this.root1.uuid,what:'referent', depth:this.depth});
-            console.log(`Merging ${this.root1.label} :: ${this.root1.referent} :: ${this.root1.uuid}`);
-            console.log(`with ${this.root2.label} :: ${this.root2.referent} :: ${this.root2.uuid}`);
             this.tree.add(this.root2.uuid);
             this.tree.add(this.root1.uuid);
           }
@@ -381,8 +629,6 @@ var infUtil = (function() {
                   if(temp1.label == temp2.label) {
                     // if they are the same, merge them
                     if(temp1.referent == '*' && temp2.referent != '*') {
-                      console.log(`Merging ${this.root1.label} :: ${this.root1.referent} :: ${this.root1.uuid}`);
-                      console.log(`with ${this.root2.label} :: ${this.root2.referent} :: ${this.root2.uuid}`);
                       //console.log('Found new referent to merge');
                       results.push({from:temp2.uuid,to:temp1.uuid,what:'referent', depth:this.depth, parent:expand[i]});
                       this.tree.add(temp2.uuid);
@@ -399,8 +645,6 @@ var infUtil = (function() {
                       newItems = arrT.filter((item)=>{arrS.indexOf(item) < 0})
                       if(newItems.length>0){
                         results.push({from:temp2.uuid,to:temp1.uuid,what:'referent', depth:this.depth});
-                        console.log(`Merging ${this.root1.label} :: ${this.root1.referent} :: ${this.root1.uuid}`);
-                        console.log(`with ${this.root2.label} :: ${this.root2.referent} :: ${this.root2.uuid}`);
                         this.tree.add(temp2.uuid);
                         this.tree.add(temp1.uuid);
                       }
@@ -416,8 +660,6 @@ var infUtil = (function() {
                         newItems = arrT.filter((item)=>{arrS.indexOf(item) < 0})
                         if(newItems.length>0){
                           results.push({from:temp2.uuid,to:temp1.uuid,what:'referent', depth:this.depth});
-                          console.log(`Merging ${this.root1.label} :: ${this.root1.referent} :: ${this.root1.uuid}`);
-                          console.log(`with ${this.root2.label} :: ${this.root2.referent} :: ${this.root2.uuid}`);
                           this.tree.add(temp2.uuid);
                           this.tree.add(temp1.uuid);
                         }
@@ -429,7 +671,7 @@ var infUtil = (function() {
                         this.tree.add(temp1.uuid);
                     }
                   } else {
-                    console.log('no match')
+                    //console.log('no match')
                   }
                 }
               }
@@ -542,7 +784,6 @@ var infUtil = (function() {
         for(let j=0;j<sourceCon.length;j++){
           //if they are the same type, create a 'possible' projection with the 2 concepts
           if(targetCon[i].label == sourceCon[j].label) {
-            console.log(`Creating Tree for ${targetCon[i].label} and ${sourceCon[j].label}`);
             var tree = new infUtil.Tree(target, targetCon[i], source, sourceCon[j], rule)
             posProj.push(tree)
             found = true

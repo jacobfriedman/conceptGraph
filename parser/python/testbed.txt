@@ -1,0 +1,1346 @@
+INPUT STRING:
+
+; Every CG in this file is syntactically correct. ;
+; This one, which contains only three comments, is correct. ;
+; And so is the next one, which is totally blank. ;
+
+RESULT OF PARSING:
+
+CG
+   ; Every CG in this file is syntactically correct. ;
+   ; This one, which contains only three comments, is correct. ;
+   ; And so is the next one, which is totally blank. ;
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+
+
+RESULT OF PARSING:
+
+CG was empty
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+[Cat: *x] [Mat *y] (On ?x ?y)
+
+RESULT OF PARSING:
+
+CG
+   Concept
+      Type
+         Cat
+      CorefLinks
+         DefLabel
+            x
+   Concept
+      Type
+         Mat
+      CorefLinks
+         DefLabel
+            y
+   Relation
+      Type
+         On
+      Arc
+         BoundLabel
+            x
+      Arc
+         BoundLabel
+            y
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+[Cat *x] ; A CG comment ; [Mat: *y; A concept comment;]
+   (On ?x ?y; And a relation comment;)
+
+RESULT OF PARSING:
+
+CG
+   Concept
+      Type
+         Cat
+      CorefLinks
+         DefLabel
+            x
+   ; A CG comment ;
+   Concept
+      Type
+         Mat
+      CorefLinks
+         DefLabel
+            y
+      ; A concept comment;
+   Relation
+      Type
+         On
+      Arc
+         BoundLabel
+            x
+      Arc
+         BoundLabel
+            y
+      ; And a relation comment;
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+(On [Cat: #this] [Mat: #1234])
+
+RESULT OF PARSING:
+
+CG
+   Relation
+      Type
+         On
+      Arc
+         Concept
+            Type
+               Cat
+            Referent
+               Designator
+                  Locator
+                     Indexical
+                        this
+      Arc
+         Concept
+            Type
+               Mat
+            Referent
+               Designator
+                  Locator
+                     Individual
+                        1234
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+(On [Cat: ;This comment is part of a CG; ;This one is part of a concept;]
+[Mat: ;Two comments;*x;with a coreference label between them;]);;;;
+
+RESULT OF PARSING:
+
+CG
+   Relation
+      Type
+         On
+      Arc
+         Concept
+            Type
+               Cat
+            Referent
+               Descriptor
+                  CG
+                     ;This comment is part of a CG;
+            ;This one is part of a concept;
+      Arc
+         Concept
+            Type
+               Mat
+            CorefLinks
+               DefLabel
+                  x
+            Referent
+               Descriptor
+                  CG
+                     ;Two comments;
+            ;with a coreference label between them;
+   ;;;;
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+[Cat: @every*x] [Mat: *y] (On ?x ?y)
+
+RESULT OF PARSING:
+
+CG
+   Concept
+      Type
+         Cat
+      CorefLinks
+         DefLabel
+            x
+      Referent
+         Designator
+            Quantifier
+               every
+   Concept
+      Type
+         Mat
+      CorefLinks
+         DefLabel
+            y
+   Relation
+      Type
+         On
+      Arc
+         BoundLabel
+            x
+      Arc
+         BoundLabel
+            y
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+(On [Cat: @every] [Mat: #])
+
+RESULT OF PARSING:
+
+CG
+   Relation
+      Type
+         On
+      Arc
+         Concept
+            Type
+               Cat
+            Referent
+               Designator
+                  Quantifier
+                     every
+      Arc
+         Concept
+            Type
+               Mat
+            Referent
+               Designator
+                  Locator
+                     Indexical
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+~[ [Cat: *x]  ~[ (On ?x [Mat: #]) ]]
+
+RESULT OF PARSING:
+
+CG
+   Negation
+      CG
+         Concept
+            Type
+               Cat
+            CorefLinks
+               DefLabel
+                  x
+         Negation
+            CG
+               Relation
+                  Type
+                     On
+                  Arc
+                     BoundLabel
+                        x
+                  Arc
+                     Concept
+                        Type
+                           Mat
+                        Referent
+                           Designator
+                              Locator
+                                 Indexical
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+[Go: *x] [Person: 'John' *y] [City: 'Boston' *z] [Bus: *w]
+   (Agnt ?x ?y) (Dest ?x ?z) (Inst ?x ?z)
+
+RESULT OF PARSING:
+
+CG
+   Concept
+      Type
+         Go
+      CorefLinks
+         DefLabel
+            x
+   Concept
+      Type
+         Person
+      CorefLinks
+         DefLabel
+            y
+      Referent
+         Designator
+            Locator
+               'John'
+   Concept
+      Type
+         City
+      CorefLinks
+         DefLabel
+            z
+      Referent
+         Designator
+            Locator
+               'Boston'
+   Concept
+      Type
+         Bus
+      CorefLinks
+         DefLabel
+            w
+   Relation
+      Type
+         Agnt
+      Arc
+         BoundLabel
+            x
+      Arc
+         BoundLabel
+            y
+   Relation
+      Type
+         Dest
+      Arc
+         BoundLabel
+            x
+      Arc
+         BoundLabel
+            z
+   Relation
+      Type
+         Inst
+      Arc
+         BoundLabel
+            x
+      Arc
+         BoundLabel
+            z
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+[Go*x][Person:'John'*y][City:'Boston'*z][Bus*w](Agnt?x?y)(Dest?x?z)(Inst?x?z)
+
+RESULT OF PARSING:
+
+CG
+   Concept
+      Type
+         Go
+      CorefLinks
+         DefLabel
+            x
+   Concept
+      Type
+         Person
+      CorefLinks
+         DefLabel
+            y
+      Referent
+         Designator
+            Locator
+               'John'
+   Concept
+      Type
+         City
+      CorefLinks
+         DefLabel
+            z
+      Referent
+         Designator
+            Locator
+               'Boston'
+   Concept
+      Type
+         Bus
+      CorefLinks
+         DefLabel
+            w
+   Relation
+      Type
+         Agnt
+      Arc
+         BoundLabel
+            x
+      Arc
+         BoundLabel
+            y
+   Relation
+      Type
+         Dest
+      Arc
+         BoundLabel
+            x
+      Arc
+         BoundLabel
+            z
+   Relation
+      Type
+         Inst
+      Arc
+         BoundLabel
+            x
+      Arc
+         BoundLabel
+            z
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+[Go *x] (Agnt ?x [Person: 'John']) (Dest ?x [City: 'Boston']) (Inst ?x [Bus])
+
+RESULT OF PARSING:
+
+CG
+   Concept
+      Type
+         Go
+      CorefLinks
+         DefLabel
+            x
+   Relation
+      Type
+         Agnt
+      Arc
+         BoundLabel
+            x
+      Arc
+         Concept
+            Type
+               Person
+            Referent
+               Designator
+                  Locator
+                     'John'
+   Relation
+      Type
+         Dest
+      Arc
+         BoundLabel
+            x
+      Arc
+         Concept
+            Type
+               City
+            Referent
+               Designator
+                  Locator
+                     'Boston'
+   Relation
+      Type
+         Inst
+      Arc
+         BoundLabel
+            x
+      Arc
+         Concept
+            Type
+               Bus
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+(Betw [Rock] [Place *x] [Person])  (Attr ?x [Hard])
+
+RESULT OF PARSING:
+
+CG
+   Relation
+      Type
+         Betw
+      Arc
+         Concept
+            Type
+               Rock
+      Arc
+         Concept
+            Type
+               Place
+            CorefLinks
+               DefLabel
+                  x
+      Arc
+         Concept
+            Type
+               Person
+   Relation
+      Type
+         Attr
+      Arc
+         BoundLabel
+            x
+      Arc
+         Concept
+            Type
+               Hard
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+[Person *x] [Rock *y] [Place *z] [Hard *w]
+     (betw ?y ?z ?x) (attr ?z ?w)
+
+RESULT OF PARSING:
+
+CG
+   Concept
+      Type
+         Person
+      CorefLinks
+         DefLabel
+            x
+   Concept
+      Type
+         Rock
+      CorefLinks
+         DefLabel
+            y
+   Concept
+      Type
+         Place
+      CorefLinks
+         DefLabel
+            z
+   Concept
+      Type
+         Hard
+      CorefLinks
+         DefLabel
+            w
+   Relation
+      Type
+         betw
+      Arc
+         BoundLabel
+            y
+      Arc
+         BoundLabel
+            z
+      Arc
+         BoundLabel
+            x
+   Relation
+      Type
+         attr
+      Arc
+         BoundLabel
+            z
+      Arc
+         BoundLabel
+            w
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+; A concept *x containing a nested CG with a coreference label ?x ;
+[Cat *x: 'Yojo' (attr ?x [Black]) ; Yojo is a cat described as black ;]
+
+RESULT OF PARSING:
+
+CG
+   ; A concept *x containing a nested CG with a coreference label ?x ;
+   Concept
+      Type
+         Cat
+      CorefLinks
+         DefLabel
+            x
+      Referent
+         Designator
+            Locator
+               'Yojo'
+         Descriptor
+            CG
+               Relation
+                  Type
+                     attr
+                  Arc
+                     BoundLabel
+                        x
+                  Arc
+                     Concept
+                        Type
+                           Black
+      ; Yojo is a cat described as black ;
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+; Another way of saying that Yojo is a black cat ;
+(attr [Cat: 'Yojo'] [Black])
+
+RESULT OF PARSING:
+
+CG
+   ; Another way of saying that Yojo is a black cat ;
+   Relation
+      Type
+         attr
+      Arc
+         Concept
+            Type
+               Cat
+            Referent
+               Designator
+                  Locator
+                     'Yojo'
+      Arc
+         Concept
+            Type
+               Black
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+; Tom believes that Mary wants to marry a sailor ;
+[Person: 'Tom' *x1] [Believe *x2] (Expr ?x2 ?x1)
+   (Thme ?x2 [Proposition:  ; that Mary wants ;
+      [Person: 'Mary' *x3] [Want *x4] (Expr ?x4 ?x3)
+         (Thme ?x4 [Situation:  ; to marry a sailor ;
+            [Marry *x5] (Agnt ?x5 ?x3) (Thme ?x5 [Sailor]) ]) ])
+
+RESULT OF PARSING:
+
+CG
+   ; Tom believes that Mary wants to marry a sailor ;
+   Concept
+      Type
+         Person
+      CorefLinks
+         DefLabel
+            x1
+      Referent
+         Designator
+            Locator
+               'Tom'
+   Concept
+      Type
+         Believe
+      CorefLinks
+         DefLabel
+            x2
+   Relation
+      Type
+         Expr
+      Arc
+         BoundLabel
+            x2
+      Arc
+         BoundLabel
+            x1
+   Relation
+      Type
+         Thme
+      Arc
+         BoundLabel
+            x2
+      Arc
+         Concept
+            Type
+               Proposition
+            Referent
+               Descriptor
+                  CG
+                     ; that Mary wants ;
+                     Concept
+                        Type
+                           Person
+                        CorefLinks
+                           DefLabel
+                              x3
+                        Referent
+                           Designator
+                              Locator
+                                 'Mary'
+                     Concept
+                        Type
+                           Want
+                        CorefLinks
+                           DefLabel
+                              x4
+                     Relation
+                        Type
+                           Expr
+                        Arc
+                           BoundLabel
+                              x4
+                        Arc
+                           BoundLabel
+                              x3
+                     Relation
+                        Type
+                           Thme
+                        Arc
+                           BoundLabel
+                              x4
+                        Arc
+                           Concept
+                              Type
+                                 Situation
+                              Referent
+                                 Descriptor
+                                    CG
+                                       ; to marry a sailor ;
+                                       Concept
+                                          Type
+                                             Marry
+                                          CorefLinks
+                                             DefLabel
+                                                x5
+                                       Relation
+                                          Type
+                                             Agnt
+                                          Arc
+                                             BoundLabel
+                                                x5
+                                          Arc
+                                             BoundLabel
+                                                x3
+                                       Relation
+                                          Type
+                                             Thme
+                                          Arc
+                                             BoundLabel
+                                                x5
+                                          Arc
+                                             Concept
+                                                Type
+                                                   Sailor
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+[If: (On [Cat] [Mat])
+   [Then (Attr [Cat:#] [Happy]) ]]
+
+RESULT OF PARSING:
+
+CG
+   SpecialContext
+      If
+      CG
+         Relation
+            Type
+               On
+            Arc
+               Concept
+                  Type
+                     Cat
+            Arc
+               Concept
+                  Type
+                     Mat
+         SpecialContext
+            Then
+            CG
+               Relation
+                  Type
+                     Attr
+                  Arc
+                     Concept
+                        Type
+                           Cat
+                        Referent
+                           Designator
+                              Locator
+                                 Indexical
+                  Arc
+                     Concept
+                        Type
+                           Happy
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+[If (GreaterThan [Integer: +453536*x] [Number: -678.88e-34])
+   [Then: [Number*y] (Sum ?x [Number:+.01] ?y) ] ]
+
+RESULT OF PARSING:
+
+CG
+   SpecialContext
+      If
+      CG
+         Relation
+            Type
+               GreaterThan
+            Arc
+               Concept
+                  Type
+                     Integer
+                  CorefLinks
+                     DefLabel
+                        x
+                  Referent
+                     Designator
+                        Literal
+                           +453536
+            Arc
+               Concept
+                  Type
+                     Number
+                  Referent
+                     Designator
+                        Literal
+                           -678.88e-34
+         SpecialContext
+            Then
+            CG
+               Concept
+                  Type
+                     Number
+                  CorefLinks
+                     DefLabel
+                        y
+               Relation
+                  Type
+                     Sum
+                  Arc
+                     BoundLabel
+                        x
+                  Arc
+                     Concept
+                        Type
+                           Number
+                        Referent
+                           Designator
+                              Literal
+                                 +.01
+                  Arc
+                     BoundLabel
+                        y
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+[If[Then;This CG is true;;
+it's a double negation around the empty graph;;
+it also has semicolons and new lines inside a comment;]]
+
+RESULT OF PARSING:
+
+CG
+   SpecialContext
+      If
+      CG
+         SpecialContext
+            Then
+            CG
+               ;This CG is true;;
+it's a double negation around the empty graph;;
+it also has semicolons and new lines inside a comment;
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+[Time: %date{[:+3] [:"Oct"] [:+2000]}; A structure;]
+[Volume: %measure{[Real:+2.5] [Cup]}; Another structure;]
+
+RESULT OF PARSING:
+
+CG
+   Concept
+      Type
+         Time
+      Referent
+         Descriptor
+            Structure
+               date
+               Arc
+                  Concept
+                     Referent
+                        Designator
+                           Literal
+                              +3
+               Arc
+                  Concept
+                     Referent
+                        Designator
+                           Literal
+                              "Oct"
+               Arc
+                  Concept
+                     Referent
+                        Designator
+                           Literal
+                              +2000
+      ; A structure;
+   Concept
+      Type
+         Volume
+      Referent
+         Descriptor
+            Structure
+               measure
+               Arc
+                  Concept
+                     Type
+                        Real
+                     Referent
+                        Designator
+                           Literal
+                              +2.5
+               Arc
+                  Concept
+                     Type
+                        Cup
+      ; Another structure;
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+; A variety of quantifiers and structures. ;
+[Coffee: @amt{[Real: +2.5] [Cup]} ; Two and a half cups of coffee ;]
+[Rosebush: {} ; Some rosebushes ;]
+[Flower: @6 ; Six flowers ;]
+[Tree: @count{[: +0] [: +7]} ; At most seven trees ;]
+[Integer: *x] [Tree: @count{?x}] [Dog: @count{?x} ; As many trees as dogs ;]
+[Person: {[:'Tom'] [:'Dick'] [:'Harry']} ; Tom, Dick, and Harry ;]
+[Animal: {[Cat: 'Yojo']}@4 ; Four animals, including Yojo ;]
+[Pet: {[Dog] [Cat]}@count{[:+2] [:+5]} ; 2 to 5 pets, including a dog and a cat ;]
+
+RESULT OF PARSING:
+
+CG
+   ; A variety of quantifiers and structures. ;
+   Concept
+      Type
+         Coffee
+      Referent
+         Designator
+            Quantifier
+               amt
+               Arc
+                  Concept
+                     Type
+                        Real
+                     Referent
+                        Designator
+                           Literal
+                              +2.5
+               Arc
+                  Concept
+                     Type
+                        Cup
+      ; Two and a half cups of coffee ;
+   Concept
+      Type
+         Rosebush
+      Referent
+         Descriptor
+            Structure
+               set
+      ; Some rosebushes ;
+   Concept
+      Type
+         Flower
+      Referent
+         Designator
+            Quantifier
+               count
+               6
+      ; Six flowers ;
+   Concept
+      Type
+         Tree
+      Referent
+         Designator
+            Quantifier
+               count
+               Arc
+                  Concept
+                     Referent
+                        Designator
+                           Literal
+                              +0
+               Arc
+                  Concept
+                     Referent
+                        Designator
+                           Literal
+                              +7
+      ; At most seven trees ;
+   Concept
+      Type
+         Integer
+      CorefLinks
+         DefLabel
+            x
+   Concept
+      Type
+         Tree
+      Referent
+         Designator
+            Quantifier
+               count
+               Arc
+                  BoundLabel
+                     x
+   Concept
+      Type
+         Dog
+      Referent
+         Designator
+            Quantifier
+               count
+               Arc
+                  BoundLabel
+                     x
+      ; As many trees as dogs ;
+   Concept
+      Type
+         Person
+      Referent
+         Descriptor
+            Structure
+               set
+               Arc
+                  Concept
+                     Referent
+                        Designator
+                           Locator
+                              'Tom'
+               Arc
+                  Concept
+                     Referent
+                        Designator
+                           Locator
+                              'Dick'
+               Arc
+                  Concept
+                     Referent
+                        Designator
+                           Locator
+                              'Harry'
+      ; Tom, Dick, and Harry ;
+   Concept
+      Type
+         Animal
+      Referent
+         Designator
+            Quantifier
+               count
+               4
+         Descriptor
+            Structure
+               set
+               Arc
+                  Concept
+                     Type
+                        Cat
+                     Referent
+                        Designator
+                           Locator
+                              'Yojo'
+      ; Four animals, including Yojo ;
+   Concept
+      Type
+         Pet
+      Referent
+         Designator
+            Quantifier
+               count
+               Arc
+                  Concept
+                     Referent
+                        Designator
+                           Literal
+                              +2
+               Arc
+                  Concept
+                     Referent
+                        Designator
+                           Literal
+                              +5
+         Descriptor
+            Structure
+               set
+               Arc
+                  Concept
+                     Type
+                        Dog
+               Arc
+                  Concept
+                     Type
+                        Cat
+      ; 2 to 5 pets, including a dog and a cat ;
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+[(lambda (Entity *a) [Cat ?a]) *x ; Lambda expression as the type;]
+((lambda (Entity *a, Entity *b) (on ?a ?b)) ?x [Mat]; Dyadic lambda expr;)
+
+RESULT OF PARSING:
+
+CG
+   Concept
+      Type
+         TypeExpression
+            Signature
+               FormalParameter
+                  Type
+                     Entity
+                  DefLabel
+                     a
+            CG
+            Concept
+               Type
+                  Cat
+               CorefLinks
+                  BoundLabel
+                     a
+      CorefLinks
+         DefLabel
+            x
+      ; Lambda expression as the type;
+   Relation
+      Type
+         TypeExpression
+            Signature
+               FormalParameter
+                  Type
+                     Entity
+                  DefLabel
+                     a
+               FormalParameter
+                  Type
+                     Entity
+                  DefLabel
+                     b
+            CG
+            Relation
+               Type
+                  on
+               Arc
+                  BoundLabel
+                     a
+               Arc
+                  BoundLabel
+                     b
+      Arc
+         BoundLabel
+            x
+      Arc
+         Concept
+            Type
+               Mat
+      ; Dyadic lambda expr;
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+; Some stray cat or dog that is not on or under a mat or carpet is unhappy ;
+[((Cat|Dog)&~Pet) *x ; Some stray cat or dog ;]
+~[ ((On|Under) ?x [(Mat | Carpet) ; A mat or carpet ;])]
+(Attr ?x [(~Happy) ; Unhappy ;])
+
+RESULT OF PARSING:
+
+CG
+   ; Some stray cat or dog that is not on or under a mat or carpet is unhappy ;
+   Concept
+      Type
+         TypeExpression
+            Disjuncts
+               Conjuncts
+                  TypeTerm
+                     Type
+                        TypeExpression
+                           Disjuncts
+                              Conjuncts
+                                 TypeTerm
+                                    Type
+                                       Cat
+                              Conjuncts
+                                 TypeTerm
+                                    Type
+                                       Dog
+                  TypeTerm
+                     ~
+                     Type
+                        Pet
+      CorefLinks
+         DefLabel
+            x
+      ; Some stray cat or dog ;
+   Negation
+      CG
+         Relation
+            Type
+               TypeExpression
+                  Disjuncts
+                     Conjuncts
+                        TypeTerm
+                           Type
+                              On
+                     Conjuncts
+                        TypeTerm
+                           Type
+                              Under
+            Arc
+               BoundLabel
+                  x
+            Arc
+               Concept
+                  Type
+                     TypeExpression
+                        Disjuncts
+                           Conjuncts
+                              TypeTerm
+                                 Type
+                                    Mat
+                           Conjuncts
+                              TypeTerm
+                                 Type
+                                    Carpet
+                  ; A mat or carpet ;
+   Relation
+      Type
+         Attr
+      Arc
+         BoundLabel
+            x
+      Arc
+         Concept
+            Type
+               TypeExpression
+                  Disjuncts
+                     Conjuncts
+                        TypeTerm
+                           ~
+                           Type
+                              Happy
+            ; Unhappy ;
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+; Actors from Figure 4.13 of the KR book by John Sowa ;
+<Sum [Number ?a] [Number ?b] | [Number *d] ; d:=a+b ;>
+<CS2N [String ?c] | [Number *e] ; Convert string to number ;>
+<Prod ?d ?e | [Number *x] ; x:=d*e ;>
+
+RESULT OF PARSING:
+
+CG
+   ; Actors from Figure 4.13 of the KR book by John Sowa ;
+   Actor
+      Type
+         Sum
+      Arc
+         Concept
+            Type
+               Number
+            CorefLinks
+               BoundLabel
+                  a
+      Arc
+         Concept
+            Type
+               Number
+            CorefLinks
+               BoundLabel
+                  b
+      Arc
+         Concept
+            Type
+               Number
+            CorefLinks
+               DefLabel
+                  d
+      ; d:=a+b ;
+   Actor
+      Type
+         CS2N
+      Arc
+         Concept
+            Type
+               String
+            CorefLinks
+               BoundLabel
+                  c
+      Arc
+         Concept
+            Type
+               Number
+            CorefLinks
+               DefLabel
+                  e
+      ; Convert string to number ;
+   Actor
+      Type
+         Prod
+      Arc
+         BoundLabel
+            d
+      Arc
+         BoundLabel
+            e
+      Arc
+         Concept
+            Type
+               Number
+            CorefLinks
+               DefLabel
+                  x
+      ; x:=d*e ;
+
+------------------------------------------------------------------------
+
+INPUT STRING:
+
+[Cat: *x] [Mat *y] (On ?x ?y)
+?!@#&% This is some leftover junk following the CG %&#@!?
+
+RESULT OF PARSING:
+
+Parsed
+   CG
+      Concept
+         Type
+            Cat
+         CorefLinks
+            DefLabel
+               x
+      Concept
+         Type
+            Mat
+         CorefLinks
+            DefLabel
+               y
+      Relation
+         Type
+            On
+         Arc
+            BoundLabel
+               x
+         Arc
+            BoundLabel
+               y
+   Unparsed leftovers:
+      ? ! @ # & % This is some leftover junk following the CG % & # @ ! ?
+
+------------------------------------------------------------------------
+

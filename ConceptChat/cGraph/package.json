@@ -1,0 +1,11 @@
+{
+	"name": "cGraph",
+	"type": "module",
+	"main": "index.js",
+	"dependencies": {
+		"http-server": "^0.11.1"
+	},
+	"devDependencies": {
+		"hyperhtml": "^2.30.1"
+	}
+}

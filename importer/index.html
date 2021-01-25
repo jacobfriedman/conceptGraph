@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title>Concept Chat</title>
+  <link rel="stylesheet" href="client.css" >
+</head>
+
+<script src="https://cdn.jsdelivr.net/npm/gun@0.2019.627/gun.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gun@0.2019.627/lib/then.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gun@0.2019.627/sea.js"></script>
+
+<body>
+
+  <div id="loading" class="hidden">
+    Loading Lobby....
+  </div>
+
+</body>
+<script type="text/javascript">
+  // register service worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js').then(function(registration) {
+        // Registration was successful
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }, function(err) {
+        // registration failed :(
+        console.log('ServiceWorker registration failed: ', err);
+      });
+      
+    });
+  } else {
+    console.log('Your browser does not support Service Workers.')
+  }
+
+  // register handler for messages from sw
+
+  navigator.serviceWorker.addEventListener('message', receipt);
+
+  // handle messages
+  async function receipt (ev) {
+    console.log(ev);
+    // sw is requesting module from client
+    if(ev.data.type == 'module'){
+      // getting it
+      console.log('fetching module', ev.data.path);
+      var pubAdmin = await gun.get('~@Admin').once().then();
+      var objKeys = Object.keys(pubAdmin);
+      var data = await gun.get(objKeys[1]).get('modules').get(ev.data.path).once().then();
+      console.log('sending', data);
+      // sending it back 'down'
+      navigator.serviceWorker.controller.postMessage({
+        type:'module',
+        data: data,
+        request: ev.data.request
+      });
+    }
+  }
+
+
+  // init gun connection and setup user module
+
+  var peers = ['https://E2EEC.herokuapp.com/gun']
+  var gun = Gun({peers:peers});
+  var app = gun.get('conceptChat');
+  var user = gun.user();
+  SEA.throw = true;
+  //TODO: replace this to just use a set decryption key, this is to allow retrieval and use of
+  // code found in gun and will be read only path from the admin user
+
+ (async function test() {
+
+
+      var cgAppModule = await import('./moduleOne.js');
+
+      console.log(cgAppModule, 'moduleone')
+
+      console.log('context test()')
+
+      var m4 = cgAppModule.default.moduleThree()
+      var m3 = await cgAppModule.default.moduleTwo();
+
+
+
+          console.log(cgAppModule.default, await cgAppModule.default.moduleTwo(),  await m4)
+
+      console.log(m3.default)
+
+ })()
+     
+
+
+</script>
+
+
+
+</html>

@@ -1,11 +1,11 @@
-// Generated automatically by nearley, version 2.19.1
+// Generated automatically by nearley, version 2.16.0
 // http://github.com/Hardmath123/nearley
-(function () {
-function id(x) { return x[0]; }
-var grammar = {
+
+export function id(x) { return x[0]; }
+export var grammar = {
     Lexer: undefined,
     ParserRules: [
-    {"name": "CG$string$1", "symbols": [{"literal":":"}, {"literal":":"}], "postprocess": function joiner(d) {return d.join('');}},
+{"name": "CG$string$1", "symbols": [{"literal":":"}, {"literal":":"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "CG$ebnf$1$subexpression$1", "symbols": ["Concept"]},
     {"name": "CG$ebnf$1$subexpression$1", "symbols": ["Relation"]},
     {"name": "CG$ebnf$1", "symbols": ["CG$ebnf$1$subexpression$1"]},
@@ -56,11 +56,5 @@ var grammar = {
     {"name": "Mixed", "symbols": [/[ a-zA-Z0-9=*]/]},
     {"name": "Fuzzy", "symbols": [/[+-.0-9=*]/]}
 ]
-  , ParserStart: "CG"
-}
-if (typeof module !== 'undefined'&& typeof module.exports !== 'undefined') {
-   module.exports = grammar;
-} else {
-   window.grammar = grammar;
-}
-})();
+    , ParserStart: "CG"
+  };

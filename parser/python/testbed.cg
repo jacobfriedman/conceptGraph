@@ -1,0 +1,86 @@
+; Every CG in this file is syntactically correct. ;
+; This one, which contains only three comments, is correct. ;
+; And so is the next one, which is totally blank. ;
+.
+
+.
+[Cat: *x] [Mat *y] (On ?x ?y)
+.
+[Cat *x] ; A CG comment ; [Mat: *y; A concept comment;]
+   (On ?x ?y; And a relation comment;)
+.
+(On [Cat: #this] [Mat: #1234])
+.
+(On [Cat: ;This comment is part of a CG; ;This one is part of a concept;]
+[Mat: ;Two comments;*x;with a coreference label between them;]);;;;
+.
+[Cat: @every*x] [Mat: *y] (On ?x ?y)
+.
+(On [Cat: @every] [Mat: #])
+.
+~[ [Cat: *x]  ~[ (On ?x [Mat: #]) ]]
+.
+[Go: *x] [Person: 'John' *y] [City: 'Boston' *z] [Bus: *w]
+   (Agnt ?x ?y) (Dest ?x ?z) (Inst ?x ?z)
+.
+[Go*x][Person:'John'*y][City:'Boston'*z][Bus*w](Agnt?x?y)(Dest?x?z)(Inst?x?z)
+.
+[Go *x] (Agnt ?x [Person: 'John']) (Dest ?x [City: 'Boston']) (Inst ?x [Bus])
+.
+(Betw [Rock] [Place *x] [Person])  (Attr ?x [Hard])
+.
+[Person *x] [Rock *y] [Place *z] [Hard *w]
+     (betw ?y ?z ?x) (attr ?z ?w)
+.
+; A concept *x containing a nested CG with a coreference label ?x ;
+[Cat *x: 'Yojo' (attr ?x [Black]) ; Yojo is a cat described as black ;]
+.
+; Another way of saying that Yojo is a black cat ;
+(attr [Cat: 'Yojo'] [Black])
+.
+; Tom believes that Mary wants to marry a sailor ;
+[Person: 'Tom' *x1] [Believe *x2] (Expr ?x2 ?x1)
+   (Thme ?x2 [Proposition:  ; that Mary wants ;
+      [Person: 'Mary' *x3] [Want *x4] (Expr ?x4 ?x3)
+         (Thme ?x4 [Situation:  ; to marry a sailor ;
+            [Marry *x5] (Agnt ?x5 ?x3) (Thme ?x5 [Sailor]) ]) ])
+.
+[If: (On [Cat] [Mat])
+   [Then (Attr [Cat:#] [Happy]) ]]
+.
+[If (GreaterThan [Integer: +453536*x] [Number: -678.88e-34])
+   [Then: [Number*y] (Sum ?x [Number:+.01] ?y) ] ]
+.
+[If[Then;This CG is true;;
+it's a double negation around the empty graph;;
+it also has semicolons and new lines inside a comment;]]
+.
+[Time: %date{[:+3] [:"Oct"] [:+2000]}; A structure;]
+[Volume: %measure{[Real:+2.5] [Cup]}; Another structure;]
+.
+; A variety of quantifiers and structures. ;
+[Coffee: @amt{[Real: +2.5] [Cup]} ; Two and a half cups of coffee ;]
+[Rosebush: {} ; Some rosebushes ;]
+[Flower: @6 ; Six flowers ;]
+[Tree: @count{[: +0] [: +7]} ; At most seven trees ;]
+[Integer: *x] [Tree: @count{?x}] [Dog: @count{?x} ; As many trees as dogs ;]
+[Person: {[:'Tom'] [:'Dick'] [:'Harry']} ; Tom, Dick, and Harry ;]
+[Animal: {[Cat: 'Yojo']}@4 ; Four animals, including Yojo ;]
+[Pet: {[Dog] [Cat]}@count{[:+2] [:+5]} ; 2 to 5 pets, including a dog and a cat ;]
+.
+[(lambda (Entity *a) [Cat ?a]) *x ; Lambda expression as the type;]
+((lambda (Entity *a, Entity *b) (on ?a ?b)) ?x [Mat]; Dyadic lambda expr;)
+.
+; Some stray cat or dog that is not on or under a mat or carpet is unhappy ;
+[((Cat|Dog)&~Pet) *x ; Some stray cat or dog ;]
+~[ ((On|Under) ?x [(Mat | Carpet) ; A mat or carpet ;])]
+(Attr ?x [(~Happy) ; Unhappy ;])
+.
+; Actors from Figure 4.13 of the KR book by John Sowa ;
+<Sum [Number ?a] [Number ?b] | [Number *d] ; d:=a+b ;>
+<CS2N [String ?c] | [Number *e] ; Convert string to number ;>
+<Prod ?d ?e | [Number *x] ; x:=d*e ;>
+.
+[Cat: *x] [Mat *y] (On ?x ?y)
+?!@#&% This is some leftover junk following the CG %&#@!?
+.
