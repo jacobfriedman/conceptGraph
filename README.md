@@ -14,23 +14,20 @@ I would like to personally thank Jachen Duschletta for all of his hard work and 
 Create Concept Graphs and Schemas, that can call functions and access databases
 to create answer graphs.
 
+For an overview of the async GUN-Context construction mechanism, [cGraph in the ConceptChat Directory](https://github.com/jacobfriedman/conceptGraph/tree/master/ConceptChat/cGraph).
+
 ## API
 
 While this wasn't completely formalized, it goes along the lines of 
 
 ```
     /*
-    * Procure a Context. This may be used to design a Lambda Expression.
-    * Context is the agent of having an object which is a thing. A context is 'a concept that contains a nonblank CG that is used to describe the referent of the concept; the entity that a concept refers to.'
-    * @param {string} identifier - idenfity the context
-    * @param {array} concepts  - concepts in the context
-    * @param {array} relations - relations in the context
-    * @param {array} arcMaps - arcs in the context.
-            Arc: An ordered pair <r,c> which is said to link a conceptual relation r to a concept c.
-            Arc-maps follow the form [ [[in], [out]], [...] ]
-            where Map elements = key-value pairs (arrays with two elements, e.g. [[ 1, 'one' ],[ 2, 'two' ]]).
-            e.g.    ◻1 - ◯1 - ◻2  is defined by [ [ [◻1], [◯1] ], [ [◯1],[◻2] ] ].
-    * @returns {string} identifier of the context
+    export default class Context {
+      constructor(
+                  identifier = undefined,
+                  initialItems = {concepts:[], relations:[], arcs:[] },
+                  attributes = {type: 'context', label:'this', value:'{}'}
+      ) {
     */
 ```
 
