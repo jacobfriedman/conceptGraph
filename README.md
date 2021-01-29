@@ -1,6 +1,6 @@
 # Conceptual Graphs for Javascript
 
-Conceptual Graphs inspired by John F Sowa. Runs on Gun. 
+Conceptual Graphs inspired by John F Sowa (see http://jfsowa.com/cg/index.htm ). Runs on Gun. 
 
 This library has been deprecated in favour of a P2P-Enabled Prolog-centric CG & Reasoner system (see https://github.com/jacobfriedman/p2p-prolog). We found the await() system tough to manage with respect to axiom-enforcement in an alternate system.
 
